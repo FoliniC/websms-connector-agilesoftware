@@ -40,13 +40,13 @@ public final class Preferences extends ConnectorPreferenceActivity implements
 	static final String PREFS_ENABLED = "enable_agilesoftware";
 	/** Preference's name: user's password. */
 	static final String PREFS_PASSWORD = "password_agilesoftware";
+	/** Preference's name: user's login. */
+	static final String PREFS_USER = "user_agilesoftware";
 
 	/** Base referral URL. */
-	private static final String REF_URL = "http://www.agilesoftware-sms.com/?ref=";
-	// "http://www.agilesoftware-sms.com/index_iPhone.php?action=Register&ref=";
+	private static final String REF_URL = "http://it.agiletelecom.com/prova-gratis-agile-telecom?REF=";
 	/** Ids of referrals. */
-	private static final String[] REF_IDS = new String[] { "DWNWAAAU",
-			"ZXAQDHJW", "JJAZACFZ" };
+	private static final String[] REF_IDS = new String[] { "Carlo"};
 
 	/**
 	 * {@inheritDoc}

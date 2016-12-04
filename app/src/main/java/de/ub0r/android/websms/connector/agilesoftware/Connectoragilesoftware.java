@@ -33,7 +33,7 @@ import de.ub0r.android.websms.connector.common.Utils;
 import de.ub0r.android.websms.connector.common.WebSMSException;
 
 /**
- * AsyncTask to manage IO to agilesoftware-sms.com API.
+ * AsyncTask to manage IO to agilesoftware.com API.
  * 
  * @author flx
  */
@@ -50,7 +50,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 	private static final String PREFS_HIDE_WO_SENDER = "hide_nosender";
 
 	/** agilesoftware Gateway URL. */
-	private static final String URL = "https://gw.agilesoftware-sms.com/";
+	private static final String URL = "https://secure.agiletelecom.com/securesend_v1.aspx";
 	/** Ad unitid. */
 	private static final String AD_UNITID = "a14dbba90186ed3";
 
@@ -97,7 +97,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 	}
 
 	/**
-	 * Check return code from agilesoftware-sms.com.
+	 * Check return code from agilesoftware.com.
 	 * 
 	 * @param context
 	 *            {@link Context}

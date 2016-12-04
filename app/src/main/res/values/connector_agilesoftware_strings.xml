@@ -17,13 +17,13 @@
                 not, see <http://www.gnu.org/licenses/>. 
         --> 
 <resources>
-	<string name="app_name">WebSMS Connector: agilesoftware-SMS</string>
-	<string name="app_version">1.8.4</string>
-	<string name="connector_agilesoftware_author">Felix Bechstein &lt;f@ub0r.de&gt;</string>
+	<string name="app_name">WebSMS Connector: agilesoftware</string>
+	<string name="app_version">1.0.0</string>
+	<string name="connector_agilesoftware_author">Carlo Folini&lt;carlo.folini@gmail.com&gt;</string>
 	<string name="connector_agilesoftware_name">agilesoftware</string>
 	<string name="connector_agilesoftware_preferences">Preferences - agilesoftware</string>
 	<string name="enable_agilesoftware">Enable agilesoftware</string>
-	<string name="partner_agilesoftware_hint">Create new agilesoftware-sms.com account</string>
+	<string name="partner_agilesoftware_hint">Create new agiletelecom.com account</string>
 	<string name="wo_sender">w/o sender</string>
 	<string name="w_sender">w/ sender</string>
 	
