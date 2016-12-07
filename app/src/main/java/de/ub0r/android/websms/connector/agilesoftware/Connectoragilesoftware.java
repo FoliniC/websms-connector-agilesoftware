@@ -18,19 +18,52 @@
  */
 package de.ub0r.android.websms.connector.agilesoftware;
 
+import java.io.IOException;
+import java.nio.Buffer;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import de.ub0r.android.websms.connector.common.BasicConnector;
+import de.ub0r.android.websms.connector.common.Connector;
 import de.ub0r.android.websms.connector.common.ConnectorCommand;
+import de.ub0r.android.websms.connector.common.ConnectorService;
 import de.ub0r.android.websms.connector.common.ConnectorSpec;
 import de.ub0r.android.websms.connector.common.Log;
 import de.ub0r.android.websms.connector.common.Utils;
 import de.ub0r.android.websms.connector.common.WebSMSException;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+
+import static android.R.string.copy;
 
 /**
  * AsyncTask to manage IO to agilesoftware.com API.
@@ -54,7 +87,60 @@ public final class Connectoragilesoftware extends BasicConnector {
 	/** Ad unitid. */
 	private static final String AD_UNITID = "a14dbba90186ed3";
 
-	@Override
+    @Override
+    protected void doSend(final Context context, Intent intent) throws IOException {
+        //super.doSend(context, intent);
+//        GitHubService gitHubService = GitHubService.retrofit.create(GitHubService.class);
+//        Call<List<Contributor>> call = gitHubService.repoContributors("square", "retrofit");
+//        List<Contributor> result = call.execute().body();
+        AgileTelecomService agileTelecomService = AgileTelecomService.retrofit.create(AgileTelecomService.class);
+
+        ConnectorService smsData = (ConnectorService)context;
+        Call call = null   ;
+        ///////////
+        try {
+            ConnectorSpec e = ConnectorSpec.fromIntent(intent);
+            ConnectorCommand command = new ConnectorCommand(intent);
+            String[] r = command.getRecipients();
+            final ConnectorSpec origSpecs = new ConnectorSpec(intent);
+            final ConnectorSpec specs = this.getSpec(context);
+
+            call = agileTelecomService.sendSMS(command.getText(), "+1111111111", "test", "H" , "file.sms", "test","test", "1234","");
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+                    Log.d(TAG, "Call ok " + response.raw().message() );
+                    sendInfo(context, null, null);
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Log.d(TAG, "Call ko");
+                    sendInfo(context, null, null);
+                }
+            });
+        } catch (WebSMSException var8) {
+            Log.e("IO", "error starting service", var8);
+        } catch (Exception e) {
+            Log.d(TAG, "Call queued error:  " + e.getMessage());
+        } ;       /////////
+
+        //retrofit2.Response response = call.execute();
+
+
+
+        Log.d(TAG, "Call queued");
+        //return response.body().string();
+        //List<Contributor> result = call.execute().body();
+    }
+
+    @Override
+    protected void onNewRequest(Context context, ConnectorSpec regSpec, ConnectorCommand command) {
+        Log.d(TAG, "onNewRequest");
+        super.onNewRequest(context, regSpec, command);
+    }
+
+    @Override
 	public ConnectorSpec initSpec(final Context context) {
 		final String name = context
 				.getString(R.string.connector_agilesoftware_name);
@@ -96,7 +182,19 @@ public final class Connectoragilesoftware extends BasicConnector {
 		return connectorSpec;
 	}
 
-	/**
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "OnReceive");
+        super.onReceive(context, intent);
+    }
+
+    @Override
+    public IBinder peekService(Context myContext, Intent service) {
+        Log.d(TAG, "peekService");
+        return super.peekService(myContext, service);
+    }
+
+    /**
 	 * Check return code from agilesoftware.com.
 	 * 
 	 * @param context
@@ -191,17 +289,6 @@ public final class Connectoragilesoftware extends BasicConnector {
 	}
 
 	@Override
-	protected String getUrlBalance(final ArrayList<BasicNameValuePair> d) {
-		d.add(new BasicNameValuePair("check", "guthaben"));
-		return URL;
-	}
-
-	@Override
-	protected String getUrlSend(final ArrayList<BasicNameValuePair> d) {
-		return URL;
-	}
-
-	@Override
 	protected boolean usePost(final ConnectorCommand command) {
 		return false;
 	}
@@ -211,6 +298,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 			final ConnectorCommand command, final ConnectorSpec cs,
 			final ArrayList<BasicNameValuePair> d) {
 		boolean sendWithSender = false;
+        Log.d(TAG, "addExtraArgs");
 		final String sub = command.getSelectedSubConnector();
 		if (sub != null && sub.equals(ID_W_SENDER)) {
 			sendWithSender = true;
@@ -221,10 +309,23 @@ public final class Connectoragilesoftware extends BasicConnector {
 		}
 	}
 
-	@Override
+    @Override
+    protected HttpEntity addHttpEntity(Context context, ConnectorCommand command, ConnectorSpec cs) {
+        Log.d(TAG, "addHttpEntity");
+        return super.addHttpEntity(context, command, cs);
+    }
+
+    @Override
+    protected void doUpdate(Context context, Intent intent) throws IOException {
+        Log.d(TAG, "doUpdate");
+        super.doUpdate(context, intent);
+    }
+
+    @Override
 	protected void parseResponse(final Context context,
 			final ConnectorCommand command, final ConnectorSpec cs,
 			final String htmlText) {
+        Log.d(TAG, "parseResponse");
 		if (htmlText == null || htmlText.length() == 0) {
 			throw new WebSMSException(context, R.string.error_service);
 		}
@@ -245,4 +346,52 @@ public final class Connectoragilesoftware extends BasicConnector {
 			cs.setBalance(lines[l - 1].trim());
 		}
 	}
+
+    @Override
+    protected void parseResponseCode(Context context, HttpResponse response) {
+        Log.e(TAG, "parseResponseCode");
+        super.parseResponseCode(context, response);
+    }
 }
+
+interface GitHubService {
+	@GET("repos/{owner}/{repo}/contributors")
+    Call<List<Contributor>> repoContributors(
+			@Path("owner") String owner,
+			@Path("repo") String repo);
+
+
+
+	Retrofit retrofit = new Retrofit.Builder()
+			.baseUrl("https://api.github.com/")
+            .client(UnsafeOkHttpClient.getUnsafeOkHttpClient())
+            .addConverterFactory(GsonConverterFactory.create())
+			.build();
+}
+
+
+interface AgileTelecomService {
+    @GET("securesend_v1.aspx")
+    Call<String> sendSMS(
+            @Query("smsTEXT") String smsTEXT,
+            @Query("smsNUMBER") String smsNUMBER,
+            @Query("smsSENDER") String smsSENDER,
+            @Query("smsGATEWAY") String smsGATEWAY,
+            @Query("smsTYPE") String smsType,
+            @Query("smsUSER") String smsUSER,
+            @Query("smsPASSWORD") String smsPASSWORD,
+            @Query("smsDELIVERY") String smsDELIVERY,
+            @Query("smsDELAYED") String smsDELAYED);
+
+
+    Gson gson = new GsonBuilder()
+            .setLenient()
+            .create();
+
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("https://secure.agiletelecom.com/")
+            .client(UnsafeOkHttpClient.getUnsafeOkHttpClient())
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build();
+}
+

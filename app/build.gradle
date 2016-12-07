@@ -8,14 +8,14 @@ repositories {
 }
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion "25.0.0"
 
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         minSdkVersion 5
-        targetSdkVersion 19
+        targetSdkVersion 25
         versionCode 1512
         versionName "1.8.4"
     }
@@ -58,4 +58,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'de.ub0r.android.websms.connector.common:WebSMSAPI:1.1'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
 }
