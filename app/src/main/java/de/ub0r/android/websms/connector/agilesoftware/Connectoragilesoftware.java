@@ -24,14 +24,11 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.os.Process;
 import android.preference.PreferenceManager;
 import android.widget.TextView;
 
@@ -60,6 +57,7 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -71,7 +69,7 @@ import static android.R.string.copy;
  * @author flx
  */
 public final class Connectoragilesoftware extends BasicConnector {
-	/** Tag for output. */
+	/** TAG for output. */
 	private static final String TAG = "agilesoftware";
 	/** SubConnectorSpec ID: with sender. */
 	private static final String ID_W_SENDER = "w_sender";
@@ -104,39 +102,41 @@ public final class Connectoragilesoftware extends BasicConnector {
             String[] r = command.getRecipients();
             final ConnectorSpec origSpecs = new ConnectorSpec(intent);
             final ConnectorSpec specs = this.getSpec(context);
+			String userName = null;
+			userName  = getUsername(context, command, specs);
 
             call = agileTelecomService.sendSMS(command.getText(), "+1111111111", "test", "H" , "file.sms", "test","test", "1234","");
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-                    Log.d(TAG, "Call ok " + response.raw().message() );
+                    Log.d(TAG + "[" +  Process.myTid() + "]", "Call response: " + response.raw().message() );
                     sendInfo(context, null, null);
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    Log.d(TAG, "Call ko");
+                    Log.d(TAG + "[" +  Process.myTid() + "]", "Call ko");
                     sendInfo(context, null, null);
                 }
             });
         } catch (WebSMSException var8) {
             Log.e("IO", "error starting service", var8);
         } catch (Exception e) {
-            Log.d(TAG, "Call queued error:  " + e.getMessage());
-        } ;       /////////
+            Log.d(TAG + "[" +  Process.myTid() + "]", "Call queued error:  " + e.getMessage());
+        };       /////////
 
         //retrofit2.Response response = call.execute();
 
 
 
-        Log.d(TAG, "Call queued");
+        Log.d(TAG + "[" +  Process.myTid() + "]", "Call queued");
         //return response.body().string();
         //List<Contributor> result = call.execute().body();
     }
 
     @Override
     protected void onNewRequest(Context context, ConnectorSpec regSpec, ConnectorCommand command) {
-        Log.d(TAG, "onNewRequest");
+        Log.d(TAG + "[" +  Process.myTid() + "]", "onNewRequest");
         super.onNewRequest(context, regSpec, command);
     }
 
@@ -184,13 +184,13 @@ public final class Connectoragilesoftware extends BasicConnector {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "OnReceive");
+        Log.d(TAG + "[" +  Process.myTid() + "]", "OnReceive");
         super.onReceive(context, intent);
     }
 
     @Override
     public IBinder peekService(Context myContext, Intent service) {
-        Log.d(TAG, "peekService");
+        Log.d(TAG + "[" +  Process.myTid() + "]", "peekService");
         return super.peekService(myContext, service);
     }
 
@@ -204,7 +204,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 	 * @return true if no error code
 	 */
 	private static boolean checkReturnCode(final Context context, final int ret) {
-		Log.d(TAG, "ret=" + ret);
+		Log.d(TAG + "[" +  Process.myTid() + "]", "ret=" + ret);
 		switch (ret) {
 		case 100:
 			return true;
@@ -293,31 +293,31 @@ public final class Connectoragilesoftware extends BasicConnector {
 		return false;
 	}
 
-	@Override
+	/*@Override
 	protected void addExtraArgs(final Context context,
 			final ConnectorCommand command, final ConnectorSpec cs,
 			final ArrayList<BasicNameValuePair> d) {
 		boolean sendWithSender = false;
-        Log.d(TAG, "addExtraArgs");
+        Log.d(TAG + "[" +  Process.myTid() + "]", "addExtraArgs");
 		final String sub = command.getSelectedSubConnector();
 		if (sub != null && sub.equals(ID_W_SENDER)) {
 			sendWithSender = true;
 		}
-		Log.d(TAG, "send with sender = " + sendWithSender);
+		Log.d(TAG + "[" +  Process.myTid() + "]", "send with sender = " + sendWithSender);
 		if (sendWithSender) {
 			d.add(new BasicNameValuePair("from", "1"));
 		}
-	}
+	}*/
 
-    @Override
+    /*@Override
     protected HttpEntity addHttpEntity(Context context, ConnectorCommand command, ConnectorSpec cs) {
-        Log.d(TAG, "addHttpEntity");
+        Log.d(TAG + "[" +  Process.myTid() + "]", "addHttpEntity");
         return super.addHttpEntity(context, command, cs);
-    }
+    }*/
 
     @Override
     protected void doUpdate(Context context, Intent intent) throws IOException {
-        Log.d(TAG, "doUpdate");
+        Log.d(TAG + "[" +  Process.myTid() + "]", "doUpdate");
         super.doUpdate(context, intent);
     }
 
@@ -325,7 +325,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 	protected void parseResponse(final Context context,
 			final ConnectorCommand command, final ConnectorSpec cs,
 			final String htmlText) {
-        Log.d(TAG, "parseResponse");
+        Log.d(TAG + "[" +  Process.myTid() + "]" + "[" +  Process.myTid() + "]", "parseResponse");
 		if (htmlText == null || htmlText.length() == 0) {
 			throw new WebSMSException(context, R.string.error_service);
 		}
@@ -339,19 +339,19 @@ public final class Connectoragilesoftware extends BasicConnector {
 					cs.setBalance(lines[l - 1].trim());
 				}
 			} catch (NumberFormatException e) {
-				Log.e(TAG, "could not parse ret", e);
+				Log.e(TAG + "[" +  Process.myTid() + "]", "could not parse ret", e);
 				throw new WebSMSException(e.getMessage());
 			}
 		} else {
 			cs.setBalance(lines[l - 1].trim());
 		}
 	}
-
+/*
     @Override
     protected void parseResponseCode(Context context, HttpResponse response) {
-        Log.e(TAG, "parseResponseCode");
+        Log.e(TAG + "[" +  Process.myTid() + "]", "parseResponseCode");
         super.parseResponseCode(context, response);
-    }
+    }*/
 }
 
 interface GitHubService {
@@ -371,7 +371,7 @@ interface GitHubService {
 
 
 interface AgileTelecomService {
-    @GET("securesend_v1.aspx")
+    @POST("securesend_v1.aspx")
     Call<String> sendSMS(
             @Query("smsTEXT") String smsTEXT,
             @Query("smsNUMBER") String smsNUMBER,

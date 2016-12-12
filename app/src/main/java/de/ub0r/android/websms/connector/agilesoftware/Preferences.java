@@ -18,6 +18,7 @@
  */
 package de.ub0r.android.websms.connector.agilesoftware;
 
+import android.os.Process;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,15 +34,15 @@ import de.ub0r.android.websms.connector.common.Log;
  */
 public final class Preferences extends ConnectorPreferenceActivity implements
 		OnPreferenceClickListener {
-	/** Tag for output. */
-	private static final String TAG = "agilesoftware.pref";
+	/** TAG  for output. */
+	private static final String TAG = "11agilesoftware.pref";
 
 	/** Preference key: enabled. */
-	static final String PREFS_ENABLED = "enable_agilesoftware";
+	static final String PREFS_ENABLED = "11enable_agilesoftware";
 	/** Preference's name: user's password. */
-	static final String PREFS_PASSWORD = "password_agilesoftware";
+	static final String PREFS_PASSWORD = "11password_agilesoftware";
 	/** Preference's name: user's login. */
-	static final String PREFS_USER = "user_agilesoftware";
+	static final String PREFS_USER = "11user_agilesoftware";
 
 	/** Base referral URL. */
 	private static final String REF_URL = "http://it.agiletelecom.com/prova-gratis-agile-telecom?REF=";
@@ -66,7 +67,7 @@ public final class Preferences extends ConnectorPreferenceActivity implements
 		final int i = (int) Math.floor(Math.random() * REF_IDS.length);
 		final String url = REF_URL + REF_IDS[i];
 		final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-		Log.i(TAG, "Referral URL: " + url);
+		Log.i(TAG + "[" +  Process.myTid() + "]", "Referral URL: " + url);
 		this.startActivity(intent);
 		return true;
 	}

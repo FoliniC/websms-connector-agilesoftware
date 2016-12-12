@@ -1,0 +1,21 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference android:key="enable_agilesoftware"
+        android:title="@string/enable_agilesoftware" />
+    <EditTextPreference android:key="user_agilesoftware"
+        android:inputType="text" android:title="@string/username_"
+        android:dialogTitle="@string/username_" android:dependency="enable_agilesoftware" />
+    <EditTextPreference android:key="password_agilesoftware"
+        android:inputType="textPassword" android:title="@string/password_"
+        android:dialogTitle="@string/password_" android:dependency="enable_agilesoftware" />
+    <CheckBoxPreference android:key="use_default_sender"
+        android:defaultValue="true" android:title="@string/use_derfault_sender_"
+        android:summary="@string/use_derfault_sender_hint"
+        android:disableDependentsState="true" android:dependency="enable_agilesoftware" />
+    <EditTextPreference android:key="custom_sender"
+        android:inputType="phone" android:title="@string/custom_sender_"
+        android:dialogTitle="@string/custom_sender_" android:summary="@string/sender_hint"
+        android:dependency="use_default_sender" />
+    <PreferenceScreen android:key="new_account"
+        android:title="@string/create_account_" android:summary="@string/partner_agilesoftware_hint" />
+</PreferenceScreen>
