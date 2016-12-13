@@ -104,8 +104,13 @@ public final class Connectoragilesoftware extends BasicConnector {
             final ConnectorSpec specs = this.getSpec(context);
 			String userName = null;
 			userName  = getUsername(context, command, specs);
+			final SharedPreferences p = PreferenceManager
+					.getDefaultSharedPreferences(context);
+			String serviceUserName = p.getString(Preferences.PREFS_USER, "");
+			String servicePassword = p.getString(Preferences.PREFS_PASSWORD, "");
+			String senderNumber = p.getString(Preferences., "");
 
-            call = agileTelecomService.sendSMS(command.getText(), "+1111111111", "test", "H" , "file.sms", "test","test", "1234","");
+            call = agileTelecomService.sendSMS( command.getText(), "+1111111111", "test", "H" , "file.sms", serviceUserName, servicePassword, "1234", "");
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, retrofit2.Response<String> response) {

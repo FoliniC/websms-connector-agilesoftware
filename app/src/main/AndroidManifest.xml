@@ -68,7 +68,7 @@
         </activity>
 
         <receiver
-            android:name=".Connectoragilesoftware"
+            android:name="de.ub0r.android.websms.connector.agilesoftware.Connectoragilesoftware"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
