@@ -19,8 +19,10 @@
 package de.ub0r.android.websms.connector.agilesoftware;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.nio.Buffer;
 import java.security.cert.CertificateException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,10 +54,14 @@ import de.ub0r.android.websms.connector.common.Utils;
 import de.ub0r.android.websms.connector.common.WebSMSException;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -108,18 +114,86 @@ public final class Connectoragilesoftware extends BasicConnector {
 					.getDefaultSharedPreferences(context);
 			String serviceUserName = p.getString(Preferences.PREFS_USER, "");
 			String servicePassword = p.getString(Preferences.PREFS_PASSWORD, "");
-			String senderNumber = p.getString(Preferences., "");
+			String senderNumber = p.getString(Preferences.PREFS_SENDER_NUMBER, "");
 
-            call = agileTelecomService.sendSMS( command.getText(), "+1111111111", "test", "H" , "file.sms", serviceUserName, servicePassword, "1234", "");
-            call.enqueue(new Callback<String>() {
+            call = agileTelecomService.sendSMS( command.getText(), "+1111111111", senderNumber, "H" , "file.sms", serviceUserName, servicePassword, "1234", "");
+            call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-                    Log.d(TAG + "[" +  Process.myTid() + "]", "Call response: " + response.raw().message() );
+                public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+
+                    try {
+                        String responseBody = response.body().string();
+                        int tokenPosition = responseBody.indexOf("+Ok");
+
+                        if (tokenPosition > -1) {
+                            // response ok
+                            String amountString = responseBody.substring(tokenPosition + "+Ok ".length(),tokenPosition + "+Ok ".length() +"0000".length());
+                            amountString = String.valueOf(Double.parseDouble(amountString)/1000) + "€";
+
+                            Log.d(TAG + "[" +  Process.myTid() + "]", "Message sent. Remaining credit: " + amountString);
+                            showToast(context, "Message sent. Remaining credit: " +  amountString);
+                        }
+                        else
+                        {   tokenPosition = responseBody.indexOf("-Err");
+                            String errorMessage = null;
+                            if (tokenPosition > -1 ) {
+                                switch (responseBody.substring(tokenPosition + "-Err".length() + 1, tokenPosition + "-Err".length() + "000".length())) {
+                                    case "001":
+                                        errorMessage = "Username e/o password incorretti";
+                                        break;
+                                    case "002":
+                                        errorMessage = "Credito esaurito";
+                                        break;
+                                    case "004":
+                                        errorMessage = "Numero del destinatario non corretto";
+                                        break;
+                                    case "005":
+                                        errorMessage = "Parametro smsNUMBER mancante";
+                                        break;
+                                    case "006":
+                                        errorMessage = "Parametro smsTEXT mancante";
+                                        break;
+                                    case "007":
+                                        errorMessage = "Messaggio non abilitato";
+                                        break;
+                                    case "008":
+                                        errorMessage = "Errore del server nell'accettazione del messaggio";
+                                        break;
+                                    case "009":
+                                        errorMessage = "Client time-out";
+                                        break;
+                                    case "011":
+                                        errorMessage = "Parametro smsUser mancante";
+                                        break;
+                                    case "012":
+                                        errorMessage = "Parametro smsPassword mancante";
+                                        break;
+                                    case "013":
+                                        errorMessage = "Parametro smsNumber mancante";
+                                        break;
+                                    case "090":
+                                        errorMessage = "Troppe sessioni attive";
+                                        break;
+                                    default:
+                                        errorMessage = "Error code unknown " + responseBody.substring(tokenPosition + "-Err".length() + 1);
+                                }
+                                showToast(context, errorMessage);
+                            }
+
+                            else
+                                Log.d(TAG + "[" +  Process.myTid() + "]", String.format("Call response error : %s", response.body().string()));
+                        }
+                    } catch (IOException e1) {
+                        Log.d(TAG + "[" +  Process.myTid() + "]", String.format("response error: %s", e1.toString()));
+                    }  catch (Exception e2) {
+                        Log.d(TAG + "[" +  Process.myTid() + "]", String.format("response error: %s", e2.toString()));
+                    }
+
                     sendInfo(context, null, null);
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
                     Log.d(TAG + "[" +  Process.myTid() + "]", "Call ko");
                     sendInfo(context, null, null);
                 }
@@ -376,17 +450,18 @@ interface GitHubService {
 
 
 interface AgileTelecomService {
+    @FormUrlEncoded
     @POST("securesend_v1.aspx")
-    Call<String> sendSMS(
-            @Query("smsTEXT") String smsTEXT,
-            @Query("smsNUMBER") String smsNUMBER,
-            @Query("smsSENDER") String smsSENDER,
-            @Query("smsGATEWAY") String smsGATEWAY,
-            @Query("smsTYPE") String smsType,
-            @Query("smsUSER") String smsUSER,
-            @Query("smsPASSWORD") String smsPASSWORD,
-            @Query("smsDELIVERY") String smsDELIVERY,
-            @Query("smsDELAYED") String smsDELAYED);
+    Call<ResponseBody> sendSMS(
+            @Field("smsTEXT") String smsTEXT,
+            @Field("smsNUMBER") String smsNUMBER,
+            @Field("smsSENDER") String smsSENDER,
+            @Field("smsGATEWAY") String smsGATEWAY,
+            @Field("smsTYPE") String smsType,
+            @Field("smsUSER") String smsUSER,
+            @Field("smsPASSWORD") String smsPASSWORD,
+            @Field("smsDELIVERY") String smsDELIVERY,
+            @Field("smsDELAYED") String smsDELAYED);
 
 
     Gson gson = new GsonBuilder()

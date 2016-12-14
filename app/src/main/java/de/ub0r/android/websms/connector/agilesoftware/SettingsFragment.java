@@ -43,6 +43,8 @@ public class SettingsFragment extends PreferenceFragment implements
     static final String PREFS_PASSWORD = "password_agilesoftware";
     /** Preference's name: user's login. */
     static final String PREFS_USER = "user_agilesoftware";
+    /** Preference's name: sender phone number. */
+    static final String PREFS_SENDER_NUMBER = "sender_number_agilesoftware";
 
     /** Base referral URL. */
     private static final String REF_URL = "http://it.agiletelecom.com/prova-gratis-agile-telecom?REF=";
