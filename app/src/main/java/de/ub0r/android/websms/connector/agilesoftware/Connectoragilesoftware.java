@@ -26,6 +26,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -100,11 +102,12 @@ public final class Connectoragilesoftware extends BasicConnector {
         AgileTelecomService agileTelecomService = AgileTelecomService.retrofit.create(AgileTelecomService.class);
 
         ConnectorService smsData = (ConnectorService)context;
+
         Call call = null   ;
         ///////////
         try {
             ConnectorSpec e = ConnectorSpec.fromIntent(intent);
-            ConnectorCommand command = new ConnectorCommand(intent);
+            final ConnectorCommand command = new ConnectorCommand(intent);
             String[] r = command.getRecipients();
             final ConnectorSpec origSpecs = new ConnectorSpec(intent);
             final ConnectorSpec specs = this.getSpec(context);
@@ -112,11 +115,19 @@ public final class Connectoragilesoftware extends BasicConnector {
 			userName  = getUsername(context, command, specs);
 			final SharedPreferences p = PreferenceManager
 					.getDefaultSharedPreferences(context);
-			String serviceUserName = p.getString(Preferences.PREFS_USER, "");
+            String recipient = null;
+            if (true) {
+                recipient = Utils.getRecipientsNumber(r[0]);
+            }
+            else
+                recipient = "+1111111111";
+
+
+            String serviceUserName = p.getString(Preferences.PREFS_USER, "");
 			String servicePassword = p.getString(Preferences.PREFS_PASSWORD, "");
 			String senderNumber = p.getString(Preferences.PREFS_SENDER_NUMBER, "");
 
-            call = agileTelecomService.sendSMS( command.getText(), "+1111111111", senderNumber, "H" , "file.sms", serviceUserName, servicePassword, "1234", "");
+            call = agileTelecomService.sendSMS( command.getText(), recipient, senderNumber, "H" , "file.sms", serviceUserName, servicePassword, "1234", "");
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
@@ -128,9 +139,20 @@ public final class Connectoragilesoftware extends BasicConnector {
                         if (tokenPosition > -1) {
                             // response ok
                             String amountString = responseBody.substring(tokenPosition + "+Ok ".length(),tokenPosition + "+Ok ".length() +"0000".length());
-                            amountString = String.valueOf(Double.parseDouble(amountString)/1000) + "€";
+                            amountString = String.valueOf(Double.parseDouble(amountString)/1000).replace(".",",") + "€";
 
-                            Log.d(TAG + "[" +  Process.myTid() + "]", "Message sent. Remaining credit: " + amountString);
+                            specs.setBalance(amountString);
+
+                            final NotificationManager nm = (NotificationManager) context
+                                    .getSystemService(Context.NOTIFICATION_SERVICE);
+                            nm.notify(ConnectorService.NOTIFICATION_PENDING,
+                                    ConnectorService.getNotification(context, command));
+                            try {
+                                setResultCode(Activity.RESULT_OK);
+                            } catch (Exception e) {
+                                Log.w(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "not an ordered boradcast", e);
+                            }
+                            Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Message sent. Remaining credit: " + amountString);
                             showToast(context, "Message sent. Remaining credit: " +  amountString);
                         }
                         else
@@ -178,15 +200,18 @@ public final class Connectoragilesoftware extends BasicConnector {
                                         errorMessage = "Error code unknown " + responseBody.substring(tokenPosition + "-Err".length() + 1);
                                 }
                                 showToast(context, errorMessage);
+                                specs.setErrorMessage(errorMessage);
                             }
 
                             else
-                                Log.d(TAG + "[" +  Process.myTid() + "]", String.format("Call response error : %s", response.body().string()));
+                                Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("Call response error : %s", response.body().string()));
                         }
                     } catch (IOException e1) {
-                        Log.d(TAG + "[" +  Process.myTid() + "]", String.format("response error: %s", e1.toString()));
+                        specs.setErrorMessage(context, e1);
+                        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response error: %s", e1.toString()));
                     }  catch (Exception e2) {
-                        Log.d(TAG + "[" +  Process.myTid() + "]", String.format("response error: %s", e2.toString()));
+                        specs.setErrorMessage(context, e2);
+                        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response error: %s", e2.toString()));
                     }
 
                     sendInfo(context, null, null);
@@ -194,39 +219,134 @@ public final class Connectoragilesoftware extends BasicConnector {
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.d(TAG + "[" +  Process.myTid() + "]", "Call ko");
+                    Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call ko");
+                    specs.setErrorMessage("Call ko sendig SMS: " + t.toString());
+                    showToast(context, "Call ko sendig SMS: " + t.toString());
                     sendInfo(context, null, null);
                 }
             });
         } catch (WebSMSException var8) {
             Log.e("IO", "error starting service", var8);
         } catch (Exception e) {
-            Log.d(TAG + "[" +  Process.myTid() + "]", "Call queued error:  " + e.getMessage());
+            Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call queued error:  " + e.getMessage());
         };       /////////
 
         //retrofit2.Response response = call.execute();
 
 
 
-        Log.d(TAG + "[" +  Process.myTid() + "]", "Call queued");
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call queued");
         //return response.body().string();
         //List<Contributor> result = call.execute().body();
     }
 
     @Override
-    protected void onNewRequest(Context context, ConnectorSpec regSpec, ConnectorCommand command) {
-        Log.d(TAG + "[" +  Process.myTid() + "]", "onNewRequest");
+    protected void onNewRequest(final Context context, final ConnectorSpec regSpec, ConnectorCommand command) {
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "onNewRequest");
+
+        try {
+            getBalance(context, regSpec);
+        } catch (IOException ioe)
+        {
+            Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Get balance error:  " + ioe.getMessage());
+        }
+
         super.onNewRequest(context, regSpec, command);
+    }
+
+    final void getBalance(final Context context, final ConnectorSpec connectorSpec) throws IOException {
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  " [" +  Process.myTid() + "]", "Start ");
+        AgileTelecomService agileTelecomService = AgileTelecomService.retrofit.create(AgileTelecomService.class);
+        Call call = null   ;
+        ///////////
+        try {
+            final SharedPreferences p = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+
+            final ConnectorSpec specs = this.getSpec(context);
+
+            String serviceUserName = p.getString(Preferences.PREFS_USER, "");
+            String servicePassword = p.getString(Preferences.PREFS_PASSWORD, "");
+
+            call = agileTelecomService.sendSMS( "", "+1111111111", "", "H" , "file.sms", serviceUserName, servicePassword, "1234", "");
+            agileTelecomService.checkCredit(serviceUserName, servicePassword);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+
+                    try {
+                        String responseBody = response.body().string();
+                        //Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  " [" +  Process.myTid() + "]", "Response received " + responseBody);
+                        int tokenPosition = responseBody.indexOf("+Ok");
+
+                        if (tokenPosition > -1) {
+                            // response ok
+                            String amountString = responseBody.substring(tokenPosition + "+Ok ".length(),tokenPosition + "+Ok ".length() +"0000".length());
+                            amountString = String.valueOf(Double.parseDouble(amountString)/1000).replace(".",",") + "€";
+
+                            specs.setBalance(amountString);
+
+                            Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Remaining credit: " + amountString);
+                            showToast(context, "Remaining credit: " +  amountString);
+                        }
+                        else
+                        {   tokenPosition = responseBody.indexOf("-Err");
+                            String errorMessage = null;
+                            if (tokenPosition > -1 ) {
+                                switch (responseBody.substring(tokenPosition + "-Err".length() + 1, tokenPosition + "-Err".length() + "000".length())) {
+                                    case "001":
+                                        errorMessage = "Username e/o password incorretti";
+                                        break;
+                                    default:
+                                        errorMessage = "Error code unknown " + responseBody.substring(tokenPosition + "-Err".length() + 1);
+                                }
+                                showToast(context, errorMessage);
+                            }
+
+                            else
+                                Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("Call response error : %s", response.body().string()));
+                        }
+                    } catch (IOException e1) {
+                        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response error: %s", e1.toString()));
+                    }  catch (Exception e2) {
+                        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response error: %s", e2.toString()));
+                    }
+
+                    sendInfo(context, null, null);
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call ko " + t.toString());
+                    showToast(context, "Call ko retrieving credit: " + t.toString());
+                    connectorSpec.setBalance("error retrieving credit " + t.toString());
+                    sendInfo(context, null, null);
+                }
+            });
+        } catch (WebSMSException var8) {
+            Log.e("IO", "error starting service", var8);
+        } catch (Exception e) {
+            Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call queued error:  " + e.getMessage());
+        };       /////////
+
+        //retrofit2.Response response = call.execute();
+
+
+
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call get credit queued");
+        //return response.body().string();
+        //List<Contributor> result = call.execute().body();
     }
 
     @Override
 	public ConnectorSpec initSpec(final Context context) {
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Started ");
 		final String name = context
 				.getString(R.string.connector_agilesoftware_name);
 		ConnectorSpec c = new ConnectorSpec(name);
 		c.setAuthor(// .
 		context.getString(R.string.connector_agilesoftware_author));
-		c.setBalance(null);
+        c.setBalance("");
 		c.setAdUnitId(AD_UNITID);
 		c.setCapabilities(ConnectorSpec.CAPABILITIES_UPDATE
 				| ConnectorSpec.CAPABILITIES_SEND
@@ -241,6 +361,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 			c.addSubConnector(ID_W_SENDER,
 					context.getString(R.string.w_sender), 0);
 		}
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Ended ");
 		return c;
 	}
 
@@ -250,7 +371,8 @@ public final class Connectoragilesoftware extends BasicConnector {
 		final SharedPreferences p = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		if (p.getBoolean(Preferences.PREFS_ENABLED, false)) {
-			if (p.getString(Preferences.PREFS_PASSWORD, "").length() > 0) {
+
+            if (p.getString(Preferences.PREFS_PASSWORD, "").length() > 0) {
 				connectorSpec.setReady();
 			} else {
 				connectorSpec.setStatus(ConnectorSpec.STATUS_ENABLED);
@@ -263,13 +385,13 @@ public final class Connectoragilesoftware extends BasicConnector {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG + "[" +  Process.myTid() + "]", "OnReceive");
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "OnReceive");
         super.onReceive(context, intent);
     }
 
     @Override
     public IBinder peekService(Context myContext, Intent service) {
-        Log.d(TAG + "[" +  Process.myTid() + "]", "peekService");
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "peekService");
         return super.peekService(myContext, service);
     }
 
@@ -283,7 +405,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 	 * @return true if no error code
 	 */
 	private static boolean checkReturnCode(final Context context, final int ret) {
-		Log.d(TAG + "[" +  Process.myTid() + "]", "ret=" + ret);
+		Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "ret=" + ret);
 		switch (ret) {
 		case 100:
 			return true;
@@ -377,12 +499,12 @@ public final class Connectoragilesoftware extends BasicConnector {
 			final ConnectorCommand command, final ConnectorSpec cs,
 			final ArrayList<BasicNameValuePair> d) {
 		boolean sendWithSender = false;
-        Log.d(TAG + "[" +  Process.myTid() + "]", "addExtraArgs");
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "addExtraArgs");
 		final String sub = command.getSelectedSubConnector();
 		if (sub != null && sub.equals(ID_W_SENDER)) {
 			sendWithSender = true;
 		}
-		Log.d(TAG + "[" +  Process.myTid() + "]", "send with sender = " + sendWithSender);
+		Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "send with sender = " + sendWithSender);
 		if (sendWithSender) {
 			d.add(new BasicNameValuePair("from", "1"));
 		}
@@ -390,21 +512,21 @@ public final class Connectoragilesoftware extends BasicConnector {
 
     /*@Override
     protected HttpEntity addHttpEntity(Context context, ConnectorCommand command, ConnectorSpec cs) {
-        Log.d(TAG + "[" +  Process.myTid() + "]", "addHttpEntity");
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "addHttpEntity");
         return super.addHttpEntity(context, command, cs);
     }*/
 
     @Override
     protected void doUpdate(Context context, Intent intent) throws IOException {
-        Log.d(TAG + "[" +  Process.myTid() + "]", "doUpdate");
-        super.doUpdate(context, intent);
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "doUpdate");
+        //super.doUpdate(context, intent);
     }
 
     @Override
 	protected void parseResponse(final Context context,
 			final ConnectorCommand command, final ConnectorSpec cs,
 			final String htmlText) {
-        Log.d(TAG + "[" +  Process.myTid() + "]" + "[" +  Process.myTid() + "]", "parseResponse");
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]" + "[" +  Process.myTid() + "]", "parseResponse");
 		if (htmlText == null || htmlText.length() == 0) {
 			throw new WebSMSException(context, R.string.error_service);
 		}
@@ -418,7 +540,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 					cs.setBalance(lines[l - 1].trim());
 				}
 			} catch (NumberFormatException e) {
-				Log.e(TAG + "[" +  Process.myTid() + "]", "could not parse ret", e);
+				Log.e(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "could not parse ret", e);
 				throw new WebSMSException(e.getMessage());
 			}
 		} else {
@@ -428,7 +550,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 /*
     @Override
     protected void parseResponseCode(Context context, HttpResponse response) {
-        Log.e(TAG + "[" +  Process.myTid() + "]", "parseResponseCode");
+        Log.e(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "parseResponseCode");
         super.parseResponseCode(context, response);
     }*/
 }
@@ -463,6 +585,10 @@ interface AgileTelecomService {
             @Field("smsDELIVERY") String smsDELIVERY,
             @Field("smsDELAYED") String smsDELAYED);
 
+    @GET("credit.aspx")
+    Call<ResponseBody> checkCredit(
+            @Query("smsUSER") String smsUSER,
+            @Query("smsPASSWORD") String smsPASSWORD);
 
     Gson gson = new GsonBuilder()
             .setLenient()
