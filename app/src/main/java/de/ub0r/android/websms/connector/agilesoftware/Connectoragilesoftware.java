@@ -116,7 +116,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 			final SharedPreferences p = PreferenceManager
 					.getDefaultSharedPreferences(context);
             String recipient = null;
-            if (true) {
+            if (false) {
                 recipient = Utils.getRecipientsNumber(r[0]);
             }
             else
