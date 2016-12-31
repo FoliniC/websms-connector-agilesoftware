@@ -17,12 +17,16 @@
                 not, see <http://www.gnu.org/licenses/>. 
         --> 
 <resources>
+	<string name="app_name">WebSMS Connector: agilesoftware</string>
+	<string name="app_version">1.0.0</string>
+	<string name="connector_agilesoftware_author">Carlo Folini&lt;carlo.folini@gmail.com&gt;</string>
+	<string name="connector_agilesoftware_name">agilesoftware</string>
 	<string name="connector_agilesoftware_preferences">Einstellungen - agilesoftware</string>
 	<string name="enable_agilesoftware">Aktiviere agilesoftware</string>
 	<string name="partner_agilesoftware_hint">Neuen agilesoftware-sms.com Account anlegen</string>
 	<string name="wo_sender">ohne Absender</string>
 	<string name="w_sender">mit Absender</string>
-	
+
 	<string name="error_agilesoftware_10">Falscher Empfänger</string>
 	<string name="error_agilesoftware_20">Absender falsch</string>
 	<string name="error_agilesoftware_30">Text falsch</string>
