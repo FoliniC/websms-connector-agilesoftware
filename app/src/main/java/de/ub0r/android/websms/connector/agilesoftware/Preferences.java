@@ -18,12 +18,16 @@
  */
 package de.ub0r.android.websms.connector.agilesoftware;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Process;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceFragment;
+
 import de.ub0r.android.websms.connector.common.ConnectorPreferenceActivity;
 import de.ub0r.android.websms.connector.common.Log;
 
@@ -57,10 +61,45 @@ public final class Preferences extends ConnectorPreferenceActivity implements
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.addPreferencesFromResource(R.xml.connector_agilesoftware_prefs);
-		this.findPreference("new_account").setOnPreferenceClickListener(this);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			onCreatePreferenceActivity();
+		} else {
+			onCreatePreferenceFragment();
+		}
+		//this.addPreferencesFromResource(R.xml.connector_agilesoftware_prefs);
+		//this.findPreference("new_account").setOnPreferenceClickListener(this);
 	}
+    /**
+     * Wraps legacy {@link #onCreate(Bundle)} code for Android < 3 (i.e. API lvl
+     * < 11).
+     */
+    @SuppressWarnings("deprecation")
+    private void onCreatePreferenceActivity() {
+        addPreferencesFromResource(R.xml.connector_agilesoftware_prefs);
+    }
 
+    /**
+     * Wraps {@link #onCreate(Bundle)} code for Android >= 3 (i.e. API lvl >=
+     * 11).
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void onCreatePreferenceFragment() {
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new MyPreferenceFragment ())
+                .commit();
+    }
+    @TargetApi(11)
+    public static class MyPreferenceFragment extends PreferenceFragment
+    {
+        @Override
+        public void onCreate(final Bundle savedInstanceState)
+        {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.connector_agilesoftware_prefs); //outer class
+            // private members seem to be visible for inner class, and
+            // making it static made things so much easier
+        }
+    }
 	/**
 	 * {@inheritDoc}
 	 */
