@@ -18,7 +18,6 @@
         --> 
 <resources>
 	<string name="app_name">WebSMS Connector: agilesoftware</string>
-	<string name="app_version">1.0.0</string>
 	<string name="connector_agilesoftware_author">Carlo Folini&lt;carlo.folini@gmail.com&gt;</string>
 	<string name="connector_agilesoftware_name">agilesoftware</string>
 	<string name="connector_agilesoftware_preferences">Preferences - agilesoftware</string>
@@ -27,16 +26,15 @@
 	<string name="wo_sender">w/o sender</string>
 	<string name="w_sender">w/ sender</string>
 	
-	<string name="error_agilesoftware_10">Wrong reciepient!</string>
+	<string name="error_agilesoftware_10">Wrong recipient!</string>
 	<string name="error_agilesoftware_20">Sender incorrect!</string>
-	<string name="error_agilesoftware_30">Messagetext incorrect!</string>
-	<string name="error_agilesoftware_31">Messagetype incorrect!</string>
+	<string name="error_agilesoftware_30">Message text incorrect!</string>
+	<string name="error_agilesoftware_31">Message type incorrect!</string>
 	<string name="error_agilesoftware_40">SMS route incorrect!</string>
-	<string name="error_agilesoftware_50">Authentification failed!</string>
+	<string name="error_agilesoftware_50">Authentication failed!</string>
 	<string name="error_agilesoftware_60">Not enough credits!</string>
 	<string name="error_agilesoftware_70">Target net is not covered by this route!</string>
 	<string name="error_agilesoftware_71">A feature is impossible via this route!</string>
 	<string name="error_agilesoftware_80">Handing out SMS failed!</string>
 	<string name="error_agilesoftware_90">Sending impossible!</string>
-	<string name="error_agilesoftware_100">SMS sent</string>
 </resources>

@@ -18,14 +18,6 @@
  */
 package de.ub0r.android.websms.connector.agilesoftware;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.nio.Buffer;
-import java.security.cert.CertificateException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -34,42 +26,29 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.Process;
 import android.preference.PreferenceManager;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 
 import de.ub0r.android.websms.connector.common.BasicConnector;
-import de.ub0r.android.websms.connector.common.Connector;
 import de.ub0r.android.websms.connector.common.ConnectorCommand;
 import de.ub0r.android.websms.connector.common.ConnectorService;
 import de.ub0r.android.websms.connector.common.ConnectorSpec;
 import de.ub0r.android.websms.connector.common.Log;
 import de.ub0r.android.websms.connector.common.Utils;
 import de.ub0r.android.websms.connector.common.WebSMSException;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
-
-import static android.R.string.copy;
 
 /**
  * AsyncTask to manage IO to agilesoftware.com API.
@@ -95,28 +74,20 @@ public final class Connectoragilesoftware extends BasicConnector {
 
     @Override
     protected void doSend(final Context context, Intent intent) throws IOException {
-        //super.doSend(context, intent);
-//        GitHubService gitHubService = GitHubService.retrofit.create(GitHubService.class);
-//        Call<List<Contributor>> call = gitHubService.repoContributors("square", "retrofit");
-//        List<Contributor> result = call.execute().body();
         AgileTelecomService agileTelecomService = AgileTelecomService.retrofit.create(AgileTelecomService.class);
 
-        ConnectorService smsData = (ConnectorService)context;
 
-        Call<ResponseBody> call = null   ;
-        ///////////
+        Call<ResponseBody> call;
         try {
-            ConnectorSpec e = ConnectorSpec.fromIntent(intent);
             final ConnectorCommand command = new ConnectorCommand(intent);
             String[] r = command.getRecipients();
-            final ConnectorSpec origSpecs = new ConnectorSpec(intent);
             final ConnectorSpec specs = this.getSpec(context);
-			String userName = null;
-			userName  = getUsername(context, command, specs);
+//			String userName = null;
+//			userName  = getUsername(context, command, specs);
 			final SharedPreferences p = PreferenceManager
 					.getDefaultSharedPreferences(context);
-            String recipient = null;
-            if (false) {
+            String recipient;
+            if (true) {
                 recipient = Utils.getRecipientsNumber(r[0]);
             }
             else
@@ -157,7 +128,7 @@ public final class Connectoragilesoftware extends BasicConnector {
                         }
                         else
                         {   tokenPosition = responseBody.indexOf("-Err");
-                            String errorMessage = null;
+                            String errorMessage;
                             if (tokenPosition > -1 ) {
                                 switch (responseBody.substring(tokenPosition + "-Err".length() + 1, tokenPosition + "-Err".length() + "000".length())) {
                                     case "001":
@@ -208,7 +179,7 @@ public final class Connectoragilesoftware extends BasicConnector {
                         }
                     } catch (IOException e1) {
                         specs.setErrorMessage(context, e1);
-                        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response error: %s", e1.toString()));
+                        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response IOException error: %s", e1.toString()));
                     }  catch (Exception e2) {
                         specs.setErrorMessage(context, e2);
                         Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response error: %s", e2.toString()));
@@ -229,15 +200,10 @@ public final class Connectoragilesoftware extends BasicConnector {
             Log.e("IO", "error starting service", var8);
         } catch (Exception e) {
             Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call queued error:  " + e.getMessage());
-        };       /////////
-
-        //retrofit2.Response response = call.execute();
-
+        };
 
 
         Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call queued");
-        //return response.body().string();
-        //List<Contributor> result = call.execute().body();
     }
 
     @Override
@@ -257,8 +223,7 @@ public final class Connectoragilesoftware extends BasicConnector {
     final void getBalance(final Context context, final ConnectorSpec connectorSpec) throws IOException {
         Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  " [" +  Process.myTid() + "]", "Start ");
         AgileTelecomService agileTelecomService = AgileTelecomService.retrofit.create(AgileTelecomService.class);
-        Call call = null   ;
-        ///////////
+        Call<ResponseBody> call;
         try {
             final SharedPreferences p = PreferenceManager
                     .getDefaultSharedPreferences(context);
@@ -291,7 +256,7 @@ public final class Connectoragilesoftware extends BasicConnector {
                         }
                         else
                         {   tokenPosition = responseBody.indexOf("-Err");
-                            String errorMessage = null;
+                            String errorMessage;
                             if (tokenPosition > -1 ) {
                                 switch (responseBody.substring(tokenPosition + "-Err".length() + 1, tokenPosition + "-Err".length() + "000".length())) {
                                     case "001":
@@ -307,7 +272,7 @@ public final class Connectoragilesoftware extends BasicConnector {
                                 Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("Call response error : %s", response.body().string()));
                         }
                     } catch (IOException e1) {
-                        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response error: %s", e1.toString()));
+                        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response IOException error: %s", e1.toString()));
                     }  catch (Exception e2) {
                         Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", String.format("response error: %s", e2.toString()));
                     }
@@ -327,15 +292,8 @@ public final class Connectoragilesoftware extends BasicConnector {
             Log.e("IO", "error starting service", var8);
         } catch (Exception e) {
             Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call queued error:  " + e.getMessage());
-        };       /////////
-
-        //retrofit2.Response response = call.execute();
-
-
-
+        };
         Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Call get credit queued");
-        //return response.body().string();
-        //List<Contributor> result = call.execute().body();
     }
 
     @Override
@@ -395,47 +353,6 @@ public final class Connectoragilesoftware extends BasicConnector {
         return super.peekService(myContext, service);
     }
 
-    /**
-	 * Check return code from agilesoftware.com.
-	 * 
-	 * @param context
-	 *            {@link Context}
-	 * @param ret
-	 *            return code
-	 * @return true if no error code
-	 */
-	private static boolean checkReturnCode(final Context context, final int ret) {
-		Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "ret=" + ret);
-		switch (ret) {
-		case 100:
-			return true;
-		case 10:
-			throw new WebSMSException(context, R.string.error_agilesoftware_10);
-		case 20:
-			throw new WebSMSException(context, R.string.error_agilesoftware_20);
-		case 30:
-			throw new WebSMSException(context, R.string.error_agilesoftware_30);
-		case 31:
-			throw new WebSMSException(context, R.string.error_agilesoftware_31);
-		case 40:
-			throw new WebSMSException(context, R.string.error_agilesoftware_40);
-		case 50:
-			throw new WebSMSException(context, R.string.error_agilesoftware_50);
-		case 60:
-			throw new WebSMSException(context, R.string.error_agilesoftware_60);
-		case 70:
-			throw new WebSMSException(context, R.string.error_agilesoftware_70);
-		case 71:
-			throw new WebSMSException(context, R.string.error_agilesoftware_71);
-		case 80:
-			throw new WebSMSException(context, R.string.error_agilesoftware_80);
-		case 90:
-			throw new WebSMSException(context, R.string.error_agilesoftware_90);
-		default:
-			throw new WebSMSException(context, R.string.error, " code: " + ret);
-		}
-	}
-
 	@Override
 	protected String getParamUsername() {
 		return "user";
@@ -494,28 +411,6 @@ public final class Connectoragilesoftware extends BasicConnector {
 		return false;
 	}
 
-	/*@Override
-	protected void addExtraArgs(final Context context,
-			final ConnectorCommand command, final ConnectorSpec cs,
-			final ArrayList<BasicNameValuePair> d) {
-		boolean sendWithSender = false;
-        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "addExtraArgs");
-		final String sub = command.getSelectedSubConnector();
-		if (sub != null && sub.equals(ID_W_SENDER)) {
-			sendWithSender = true;
-		}
-		Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "send with sender = " + sendWithSender);
-		if (sendWithSender) {
-			d.add(new BasicNameValuePair("from", "1"));
-		}
-	}*/
-
-    /*@Override
-    protected HttpEntity addHttpEntity(Context context, ConnectorCommand command, ConnectorSpec cs) {
-        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "addHttpEntity");
-        return super.addHttpEntity(context, command, cs);
-    }*/
-
     @Override
     protected void doUpdate(Context context, Intent intent) throws IOException {
         Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "doUpdate");
@@ -526,48 +421,9 @@ public final class Connectoragilesoftware extends BasicConnector {
 	protected void parseResponse(final Context context,
 			final ConnectorCommand command, final ConnectorSpec cs,
 			final String htmlText) {
-        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]" + "[" +  Process.myTid() + "]", "parseResponse");
-		if (htmlText == null || htmlText.length() == 0) {
-			throw new WebSMSException(context, R.string.error_service);
-		}
-		String[] lines = htmlText.split("\n");
-		int l = lines.length;
-		if (command.getType() == ConnectorCommand.TYPE_SEND) {
-			try {
-				final int ret = Integer.parseInt(lines[0].trim());
-				checkReturnCode(context, ret);
-				if (l > 1) {
-					cs.setBalance(lines[l - 1].trim());
-				}
-			} catch (NumberFormatException e) {
-				Log.e(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "could not parse ret", e);
-				throw new WebSMSException(e.getMessage());
-			}
-		} else {
-			cs.setBalance(lines[l - 1].trim());
-		}
+        Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]" + "[" +  Process.myTid() + "]", " not used");
 	}
-/*
-    @Override
-    protected void parseResponseCode(Context context, HttpResponse response) {
-        Log.e(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "parseResponseCode");
-        super.parseResponseCode(context, response);
-    }*/
-}
 
-interface GitHubService {
-	@GET("repos/{owner}/{repo}/contributors")
-    Call<List<Contributor>> repoContributors(
-			@Path("owner") String owner,
-			@Path("repo") String repo);
-
-
-
-	Retrofit retrofit = new Retrofit.Builder()
-			.baseUrl("https://api.github.com/")
-            .client(UnsafeOkHttpClient.getUnsafeOkHttpClient())
-            .addConverterFactory(GsonConverterFactory.create())
-			.build();
 }
 
 
@@ -596,7 +452,7 @@ interface AgileTelecomService {
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("https://secure.agiletelecom.com/")
-            .client(UnsafeOkHttpClient.getUnsafeOkHttpClient())
+            //.client(UnsafeOkHttpClient.getUnsafeOkHttpClient())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build();
 }

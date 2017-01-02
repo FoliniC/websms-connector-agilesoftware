@@ -1,8 +1,5 @@
 package de.ub0r.android.websms.connector.agilesoftware;
 
-import android.annotation.SuppressLint;
-
-import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -14,13 +11,11 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import de.ub0r.android.websms.connector.common.Log;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
-import retrofit2.Retrofit;
 
 /**
- * Created by U570062 on 12/5/2016.
+ * Created by FoliniC on 12/5/2016.
  */
 public class UnsafeOkHttpClient {
     public static OkHttpClient getUnsafeOkHttpClient() {
