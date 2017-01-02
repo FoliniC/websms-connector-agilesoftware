@@ -103,7 +103,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 
         ConnectorService smsData = (ConnectorService)context;
 
-        Call call = null   ;
+        Call<ResponseBody> call = null   ;
         ///////////
         try {
             ConnectorSpec e = ConnectorSpec.fromIntent(intent);
