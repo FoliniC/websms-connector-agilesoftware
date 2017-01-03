@@ -1,4 +1,4 @@
-package de.ub0r.android.websms.connector.agilesoftware;
+package de.ub0r.android.websms.connector.agiletelecom;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

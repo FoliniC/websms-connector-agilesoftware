@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <!--                                                                                                                                          
+                Copyright (C) 2010 Felix Bechstein 
+        --> 
+        <!-- 
+                This file is part of WebSMS. This program is free software; you can 
+                redistribute it and/or modify it under the terms of the GNU General 
+                Public License as published by the Free Software Foundation; either 
+                version 3 of the License, or (at your option) any later version. 
+        --> 
+        <!-- 
+                This program is distributed in the hope that it will be useful, but 
+                WITHOUT ANY WARRANTY; without even the implied warranty of 
+                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+                General Public License for more details. You should have received a 
+                copy of the GNU General Public License along with this program; If 
+                not, see <http://www.gnu.org/licenses/>. 
+        --> 
+<resources>
+	<string name="app_name">WebSMS Connector: agiletelecom</string>
+	<string name="connector_agiletelecom_author">Carlo Folini&lt;carlo.folini@gmail.com&gt;</string>
+	<string name="connector_agiletelecom_name">agiletelecom</string>
+	<string name="connector_agiletelecom_preferences">Preferences - agiletelecom</string>
+	<string name="enable_agiletelecom">Enable agiletelecom</string>
+	<string name="partner_agiletelecom_hint">Create new agiletelecom.com account</string>
+	<string name="wo_sender">w/o sender</string>
+	<string name="w_sender">w/ sender</string>
+	
+	<string name="error_agiletelecom_10">Wrong recipient!</string>
+	<string name="error_agiletelecom_20">Sender incorrect!</string>
+	<string name="error_agiletelecom_30">Message text incorrect!</string>
+	<string name="error_agiletelecom_31">Message type incorrect!</string>
+	<string name="error_agiletelecom_40">SMS route incorrect!</string>
+	<string name="error_agiletelecom_50">Authentication failed!</string>
+	<string name="error_agiletelecom_60">Not enough credits!</string>
+	<string name="error_agiletelecom_70">Target net is not covered by this route!</string>
+	<string name="error_agiletelecom_71">A feature is impossible via this route!</string>
+	<string name="error_agiletelecom_80">Handing out SMS failed!</string>
+	<string name="error_agiletelecom_90">Sending impossible!</string>
+</resources>

@@ -1,4 +1,4 @@
-package de.ub0r.android.websms.connector.agilesoftware;
+package de.ub0r.android.websms.connector.agiletelecom;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -31,16 +31,16 @@ import de.ub0r.android.websms.connector.common.Log;
 public class SettingsFragment extends PreferenceFragment implements
         Preference.OnPreferenceClickListener {
     /** TAG  for output. */
-    private static final String TAG = "agilesoftware.pref";
+    private static final String TAG = "agiletelecom.pref";
 
     /** Preference key: enabled. */
-    static final String PREFS_ENABLED = "enable_agilesoftware";
+    static final String PREFS_ENABLED = "enable_agiletelecom";
     /** Preference's name: user's password. */
-    static final String PREFS_PASSWORD = "password_agilesoftware";
+    static final String PREFS_PASSWORD = "password_agiletelecom";
     /** Preference's name: user's login. */
-    static final String PREFS_USER = "user_agilesoftware";
+    static final String PREFS_USER = "user_agiletelecom";
     /** Preference's name: sender phone number. */
-    static final String PREFS_SENDER_NUMBER = "sender_number_agilesoftware";
+    static final String PREFS_SENDER_NUMBER = "sender_number_agiletelecom";
 
     /** Base referral URL. */
     private static final String REF_URL = "http://it.agiletelecom.com/prova-gratis-agile-telecom?REF=";
@@ -109,7 +109,7 @@ public class SettingsFragment extends PreferenceFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.connector_agilesoftware_prefs);
+        addPreferencesFromResource(R.xml.connector_agiletelecom_prefs);
         findPreference("new_account").setOnPreferenceClickListener(this);
         setupActionBar();
     }
@@ -162,14 +162,14 @@ public class SettingsFragment extends PreferenceFragment implements
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.connector_agilesoftware_prefs);
+            addPreferencesFromResource(R.xml.connector_agiletelecom_prefs);
             setHasOptionsMenu(true);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            //bindPreferenceSummaryToValue(findPreference("enable_agilesoftware"));
+            //bindPreferenceSummaryToValue(findPreference("enable_agiletelecom"));
             //bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 

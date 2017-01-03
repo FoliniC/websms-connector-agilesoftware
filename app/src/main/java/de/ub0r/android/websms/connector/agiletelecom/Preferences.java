@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; If not, see <http://www.gnu.org/licenses/>.
  */
-package de.ub0r.android.websms.connector.agilesoftware;
+package de.ub0r.android.websms.connector.agiletelecom;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -39,16 +39,16 @@ import de.ub0r.android.websms.connector.common.Log;
 public final class Preferences extends ConnectorPreferenceActivity implements
 		OnPreferenceClickListener {
 	/** TAG  for output. */
-	private static final String TAG = "agilesoftware.pref";
+	private static final String TAG = "agiletelecom.pref";
 
 	/** Preference key: enabled. */
-	static final String PREFS_ENABLED = "enable_agilesoftware";
+	static final String PREFS_ENABLED = "enable_agiletelecom";
 	/** Preference's name: user's password. */
-	static final String PREFS_PASSWORD = "password_agilesoftware";
+	static final String PREFS_PASSWORD = "password_agiletelecom";
 	/** Preference's name: user's login. */
-	static final String PREFS_USER = "user_agilesoftware";
+	static final String PREFS_USER = "user_agiletelecom";
 	/** Preference's name: user's login. */
-	static final String PREFS_SENDER_NUMBER = "sender_number_agilesoftware";
+	static final String PREFS_SENDER_NUMBER = "sender_number_agiletelecom";
 
 	/** Base referral URL. */
 	private static final String REF_URL = "http://it.agiletelecom.com/prova-gratis-agile-telecom?REF=";
@@ -66,7 +66,7 @@ public final class Preferences extends ConnectorPreferenceActivity implements
 		} else {
 			onCreatePreferenceFragment();
 		}
-		//this.addPreferencesFromResource(R.xml.connector_agilesoftware_prefs);
+		//this.addPreferencesFromResource(R.xml.connector_agiletelecom_prefs);
 		//this.findPreference("new_account").setOnPreferenceClickListener(this);
 	}
     /**
@@ -75,7 +75,7 @@ public final class Preferences extends ConnectorPreferenceActivity implements
      */
     @SuppressWarnings("deprecation")
     private void onCreatePreferenceActivity() {
-        addPreferencesFromResource(R.xml.connector_agilesoftware_prefs);
+        addPreferencesFromResource(R.xml.connector_agiletelecom_prefs);
     }
 
     /**
@@ -95,7 +95,7 @@ public final class Preferences extends ConnectorPreferenceActivity implements
         public void onCreate(final Bundle savedInstanceState)
         {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.connector_agilesoftware_prefs); //outer class
+            addPreferencesFromResource(R.xml.connector_agiletelecom_prefs); //outer class
             // private members seem to be visible for inner class, and
             // making it static made things so much easier
         }

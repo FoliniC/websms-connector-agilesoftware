@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; If not, see <http://www.gnu.org/licenses/>.
  */
-package de.ub0r.android.websms.connector.agilesoftware;
+package de.ub0r.android.websms.connector.agiletelecom;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -51,13 +51,13 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
- * AsyncTask to manage IO to agilesoftware.com API.
+ * AsyncTask to manage IO to agiletelecom.com API.
  * 
  * @author flx
  */
-public final class Connectoragilesoftware extends BasicConnector {
+public final class Connectoragiletelecom extends BasicConnector {
 	/** TAG for output. */
-	private static final String TAG = "agilesoftware";
+	private static final String TAG = "agiletelecom";
 	/** SubConnectorSpec ID: with sender. */
 	private static final String ID_W_SENDER = "w_sender";
 	/** SubConnectorSpec ID: without sender. */
@@ -67,7 +67,7 @@ public final class Connectoragilesoftware extends BasicConnector {
 	/** Preference's name: hide without sender subcon. */
 	private static final String PREFS_HIDE_WO_SENDER = "hide_nosender";
 
-	/** agilesoftware Gateway URL. */
+	/** agiletelecom Gateway URL. */
 	private static final String URL = "https://secure.agiletelecom.com/securesend_v1.aspx";
 	/** Ad unitid. */
 	private static final String AD_UNITID = "a14dbba90186ed3";
@@ -86,8 +86,8 @@ public final class Connectoragilesoftware extends BasicConnector {
 //			userName  = getUsername(context, command, specs);
 			final SharedPreferences p = PreferenceManager
 					.getDefaultSharedPreferences(context);
-            String recipient;
-            if (true) {
+            final String recipient;
+            if (false) {
                 recipient = Utils.getRecipientsNumber(r[0]);
             }
             else
@@ -121,10 +121,10 @@ public final class Connectoragilesoftware extends BasicConnector {
                             try {
                                 setResultCode(Activity.RESULT_OK);
                             } catch (Exception e) {
-                                Log.w(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "not an ordered boradcast", e);
+                                Log.w(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "not an ordered broadcast", e);
                             }
                             Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Message sent. Remaining credit: " + amountString);
-                            showToast(context, "Message sent. Remaining credit: " +  amountString);
+                            showToast(context, "Message sent to " + recipient  + ". Remaining credit: " +  amountString);
                         }
                         else
                         {   tokenPosition = responseBody.indexOf("-Err");
@@ -300,10 +300,10 @@ public final class Connectoragilesoftware extends BasicConnector {
 	public ConnectorSpec initSpec(final Context context) {
         Log.d(TAG + "." + new Object(){}.getClass().getEnclosingMethod().getName() +  "  [" +  Process.myTid() + "]", "Started ");
 		final String name = context
-				.getString(R.string.connector_agilesoftware_name);
+				.getString(R.string.connector_agiletelecom_name);
 		ConnectorSpec c = new ConnectorSpec(name);
 		c.setAuthor(// .
-		context.getString(R.string.connector_agilesoftware_author));
+		context.getString(R.string.connector_agiletelecom_author));
         c.setBalance("");
 		c.setAdUnitId(AD_UNITID);
 		c.setCapabilities(ConnectorSpec.CAPABILITIES_UPDATE

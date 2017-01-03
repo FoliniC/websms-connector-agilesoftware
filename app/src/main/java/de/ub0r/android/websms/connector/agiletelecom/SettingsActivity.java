@@ -1,4 +1,4 @@
-package de.ub0r.android.websms.connector.agilesoftware;
+package de.ub0r.android.websms.connector.agiletelecom;
 
 
 import android.app.Activity;
