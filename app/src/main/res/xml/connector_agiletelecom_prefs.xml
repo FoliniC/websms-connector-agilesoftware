@@ -33,8 +33,8 @@
 		android:title="@string/ignore_withsender_" android:summary="@string/ignore_withsender_hint"
 		android:disableDependentsState="true" android:dependency="enable_agiletelecom" />
 -->	<CheckBoxPreference android:key="use_default_sender"
-		android:defaultValue="true" android:title="@string/use_derfault_sender_"
-		android:summary="@string/use_derfault_sender_hint"
+		android:defaultValue="true" android:title="@string/use_default_sender"
+		android:summary="@string/use_default_sender"
 		android:disableDependentsState="true" android:dependency="enable_agiletelecom" />
 	<EditTextPreference android:key="sender_number_agiletelecom"
 		android:inputType="phone" android:title="@string/custom_sender_"
@@ -42,4 +42,10 @@
 		android:dependency="use_default_sender" />
 	<PreferenceScreen android:key="new_account"
 		android:title="@string/create_account_" android:summary="@string/partner_agiletelecom_hint" />
+	<Preference
+		android:key="pref_static_field_key"
+		android:selectable="false"
+		android:persistent="false"
+		android:title="you can omit the title"
+		android:summary="@string/versionName"/>
 </PreferenceScreen>

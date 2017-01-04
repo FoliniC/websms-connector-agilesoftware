@@ -27,7 +27,9 @@ android {
         versionName "2.0.4"
         vectorDrawables.useSupportLibrary = true
     }
-
+    applicationVariants.all { variant ->
+        variant.resValue "string", "versionName", variant.versionName
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7

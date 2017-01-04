@@ -17,11 +17,17 @@
                 not, see <http://www.gnu.org/licenses/>. 
         --> 
 <resources>
-	<string name="app_name">WebSMS Connector: agiletelecom</string>
+	<string name="app_name">WebSMS Connector: AgileTelecom</string>
 	<string name="connector_agiletelecom_author">Carlo Folini&lt;carlo.folini@gmail.com&gt;</string>
 	<string name="connector_agiletelecom_name">agiletelecom</string>
-	<string name="connector_agiletelecom_preferences">Preferences - agiletelecom</string>
+	<string name="connector_agiletelecom_preferences">Preferences - AgileTelecom</string>
 	<string name="enable_agiletelecom">Enable agiletelecom</string>
+	<string name="username_">User name</string>
+	<string name="password_">Password</string>
+	<string name="use_default_sender">Use default sender</string>
+	<string name="custom_sender_">Custom sender</string>
+	<string name="sender_hint">+391234567890</string>
+	<string name="create_account_">Create account</string>
 	<string name="partner_agiletelecom_hint">Create new agiletelecom.com account</string>
 	<string name="wo_sender">w/o sender</string>
 	<string name="w_sender">w/ sender</string>
