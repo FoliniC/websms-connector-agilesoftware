@@ -15,13 +15,16 @@ allprojects {
         }
     }
 }
+Properties props = new Properties()
+props.load(new FileInputStream(file(project.property("MyProject.properties"))))
+
 android {
     signingConfigs {
         config {
-            keyAlias 'business2017'
-            keyPassword 'kpi135'
-            storeFile file('Z:/MyDocuments/Dropbox/Progetti/Android/Keystore')
-            storePassword '4GCqIAAfYZfZ'
+            keyAlias props['key.alias']
+            keyPassword props['key.password']
+            storeFile file(props['keystore'])
+            storePassword props['keystore.password']
         }
     }
     compileSdkVersion 25
@@ -29,8 +32,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 2006
-        versionName "2.0.6"
+        versionCode 2007
+        versionName "2.0.7"
         vectorDrawables.useSupportLibrary = true
         signingConfig signingConfigs.config
     }
@@ -41,7 +44,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
-    signingConfigs {
+    /*signingConfigs {
         release {
             if (project.hasProperty("releaseKeystorePassword")) {
                 storeFile file("release.ks")
@@ -58,7 +61,7 @@ android {
                 keyPassword releaseKeyPassword
             }
         }
-    }
+    }*/
     buildTypes {
         debug {
             versionNameSuffix " debug"

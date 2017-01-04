@@ -87,7 +87,7 @@ public final class Connectoragiletelecom extends BasicConnector {
 			final SharedPreferences p = PreferenceManager
 					.getDefaultSharedPreferences(context);
             final String recipient;
-            if (true) {
+            if (false) {
                 recipient = Utils.getRecipientsNumber(r[0]);
             }
             else
