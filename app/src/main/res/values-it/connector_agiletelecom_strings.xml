@@ -28,6 +28,7 @@
 	<string name="custom_sender_">Mittente</string>
 	<string name="sender_hint">+391234567890</string>
 	<string name="create_account_">Crea un utente</string>
+	<string name="connector_version">Versione del connettore</string>
 	<string name="partner_agiletelecom_hint">Crea un nuovo utente su agiletelecom.com</string>
 	<string name="wo_sender">Senza mittente</string>
 	<string name="w_sender">Con mittente</string>

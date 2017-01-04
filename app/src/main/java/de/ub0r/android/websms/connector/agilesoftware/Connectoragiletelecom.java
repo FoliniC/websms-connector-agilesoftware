@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; If not, see <http://www.gnu.org/licenses/>.
  */
-package de.ub0r.android.websms.connector.agiletelecom;
+package de.ub0r.android.websms.connector.agilesoftware;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -87,7 +87,7 @@ public final class Connectoragiletelecom extends BasicConnector {
 			final SharedPreferences p = PreferenceManager
 					.getDefaultSharedPreferences(context);
             final String recipient;
-            if (false) {
+            if (true) {
                 recipient = Utils.getRecipientsNumber(r[0]);
             }
             else
@@ -452,8 +452,9 @@ interface AgileTelecomService {
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("https://secure.agiletelecom.com/")
-            //.client(UnsafeOkHttpClient.getUnsafeOkHttpClient())
+            .client(CustomOkHttpClient.getOkHttpClient())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build();
+
 }
 

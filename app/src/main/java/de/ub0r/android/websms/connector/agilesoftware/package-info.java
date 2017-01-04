@@ -23,5 +23,5 @@
  * @version 3.0
  * @author flx
  */
-package de.ub0r.android.websms.connector.agiletelecom;
+package de.ub0r.android.websms.connector.agilesoftware;
 

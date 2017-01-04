@@ -12,7 +12,7 @@
 		not, see <http://www.gnu.org/licenses/>.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.ub0r.android.websms.connector.agiletelecom">
+    package="de.ub0r.android.websms.connector.agilesoftware">
 
     <supports-screens
         android:anyDensity="true"
@@ -60,22 +60,22 @@
             android:name="de.ub0r.android.websms.connector.common.ConnectorService"
             android:exported="false" />
 
-        <activity android:name="de.ub0r.android.websms.connector.agiletelecom.SettingsActivity">
+        <activity android:name=".SettingsActivity">
             <intent-filter>
-                <action android:name="de.ub0r.android.websms.connector.agiletelecom.PREFS" />
+                <action android:name="de.ub0r.android.websms.connector.agilesoftware.PREFS" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="de.ub0r.android.websms.connector.agiletelecom.Preferences" />
+        <activity android:name=".Preferences" />
 
         <receiver
-            android:name="de.ub0r.android.websms.connector.agiletelecom.Connectoragiletelecom"
+            android:name="de.ub0r.android.websms.connector.agilesoftware.Connectoragiletelecom"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="de.ub0r.android.websms.connector.agiletelecom.RUN_UPDATE" />
-                <action android:name="de.ub0r.android.websms.connector.agiletelecom.RUN_SEND" />
+                <action android:name="de.ub0r.android.websms.connector.agilesoftware.RUN_UPDATE" />
+                <action android:name="de.ub0r.android.websms.connector.agilesoftware.RUN_SEND" />
                 <action android:name="de.ub0r.android.websms.connector.UPDATE" />
             </intent-filter>
         </receiver>

@@ -16,16 +16,23 @@ allprojects {
     }
 }
 android {
+    signingConfigs {
+        config {
+            keyAlias 'business2017'
+            keyPassword 'kpi135'
+            storeFile file('Z:/MyDocuments/Dropbox/Progetti/Android/Keystore')
+            storePassword '4GCqIAAfYZfZ'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
-
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 2004
-        versionName "2.0.4"
+        versionCode 2006
+        versionName "2.0.6"
         vectorDrawables.useSupportLibrary = true
+        signingConfig signingConfigs.config
     }
     applicationVariants.all { variant ->
         variant.resValue "string", "versionName", variant.versionName
@@ -34,7 +41,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
-
     signingConfigs {
         release {
             if (project.hasProperty("releaseKeystorePassword")) {
@@ -53,33 +59,34 @@ android {
             }
         }
     }
-
     buildTypes {
         debug {
             versionNameSuffix " debug"
+            buildConfigField "boolean", "USE_FIDDLER", "true"
+        }
+        release {
+            buildConfigField "boolean", "USE_FIDDLER", "false"
         }
 
-
-   /*     release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            signingConfig signingConfigs.release
-        }
-*/
+        /*     release {
+                 runProguard false
+                 proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+                 signingConfig signingConfigs.release
+             }
+     */
     }
-
     lintOptions {
         abortOnError false
     }
-
-   dependencies {
+    dependencies {
         compile 'com.squareup:javawriter:2.1.1'
+    }
+    productFlavors {
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-
     testCompile 'junit:junit:4.12'
     compile 'de.ub0r.android.websms.connector.common:WebSMSAPI:1.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'

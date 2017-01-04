@@ -28,6 +28,7 @@
 	<string name="custom_sender_">Custom sender</string>
 	<string name="sender_hint">+391234567890</string>
 	<string name="create_account_">Create account</string>
+	<string name="connector_version">Connector version</string>
 	<string name="partner_agiletelecom_hint">Create new agiletelecom.com account</string>
 	<string name="wo_sender">w/o sender</string>
 	<string name="w_sender">w/ sender</string>

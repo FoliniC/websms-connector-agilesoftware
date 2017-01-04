@@ -42,10 +42,11 @@
 		android:dependency="use_default_sender" />
 	<PreferenceScreen android:key="new_account"
 		android:title="@string/create_account_" android:summary="@string/partner_agiletelecom_hint" />
+	<!--string resource marked as error but it works. See definition in buil.gradle applicationVariants-->
 	<Preference
 		android:key="pref_static_field_key"
 		android:selectable="false"
 		android:persistent="false"
-		android:title="you can omit the title"
+		android:title="@string/connector_version"
 		android:summary="@string/versionName"/>
 </PreferenceScreen>
